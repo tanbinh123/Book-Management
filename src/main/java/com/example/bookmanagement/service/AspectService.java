@@ -47,15 +47,15 @@ public class AspectService {
 //        System.out.println("After Point Cut:" + joinPoint.getSignature());
 //    }
 //
-//    @Around("@annotation(com.example.bookmanagement.annotation.Benchmark)")
-//    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-//        long start = System.currentTimeMillis();
-//
-//        Object proceed = joinPoint.proceed();
-//
-//        long executionTime = System.currentTimeMillis() - start;
-//
-//        System.out.println(joinPoint.getSignature() + " executed in " + executionTime + "ms");
-//        return proceed;
-//    }
+    @Around("@annotation(com.example.bookmanagement.annotation.Benchmark)")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+
+        Object proceed = joinPoint.proceed();
+
+        long executionTime = System.currentTimeMillis() - start;
+
+        System.out.println(joinPoint.getSignature() + " executed in " + executionTime + "ms");
+        return proceed;
+    }
 }

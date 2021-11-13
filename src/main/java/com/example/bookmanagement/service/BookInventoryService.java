@@ -9,4 +9,5 @@ public interface BookInventoryService {
     List<String> getListBookIdByInventoryNumber(int inventoryNum);
     String buyBook(String bookId, int quantity);
     BookInventory getInventoryByid(int id);
+    void createFakeData();
 }

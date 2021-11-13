@@ -23,6 +23,9 @@ public class BookInventoryRepository {
     public BookInventoryRepository() {
         bookInventories = new ArrayList<>();
         mapBookInventories = new HashMap<>();
+    }
+
+    public void createFakeData() {
         for (int i = 1; i <= 1000; i++) {
             BookInventory inventory = BookInventory.builder()
                     .id(bookInventories.size())

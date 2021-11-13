@@ -23,6 +23,7 @@ public class BookServiceImpl implements BookService {
     BookInventoryService bookInventoryService;
 
     @Override
+    @Benchmark
     public void createFakeData() {
         bookRepository.createFakeData();
     }

@@ -1,8 +1,6 @@
 package com.example.bookmanagement.service.impl;
 
 import com.example.bookmanagement.annotation.Benchmark;
-import com.example.bookmanagement.constant.Constant;
-import com.example.bookmanagement.domain.Book;
 import com.example.bookmanagement.domain.BookInventory;
 import com.example.bookmanagement.event.ImportBookEvent;
 import com.example.bookmanagement.exception.BookBusinessException;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static com.example.bookmanagement.constant.Constant.*;
 
 @Service
 public class BookInventoryServiceImpl implements BookInventoryService {
@@ -45,11 +45,11 @@ public class BookInventoryServiceImpl implements BookInventoryService {
     @Benchmark
     public String buyBook(String bookId, int quantity) {
         if(Objects.isNull(bookRepository.getBookById(bookId))){
-            throw new BookBusinessException(Constant.ERROR.BOOK_DOES_NOT_EXIST);
+            throw new BookBusinessException(BOOK_DOES_NOT_EXIST);
         }
         int amount = inventoryRepository.getLastInventoryByBookId(bookId).getAmount();
         if(amount>=quantity){
-            return addInventory(bookId, quantity, Constant.INVENTORY_TYPE.BUY).toString();
+            return addInventory(bookId, quantity, BUY).toString();
         }else {
             applicationEventPublisher.publishEvent(new ImportBookEvent(this, bookId, quantity));
             return "This book is out of stock. We will import more books then contact you as soon as possible";
@@ -57,8 +57,8 @@ public class BookInventoryServiceImpl implements BookInventoryService {
     }
 
     @EventListener
-    private void onBookOutOfStock(ImportBookEvent importBookEvent){
-        addInventory(importBookEvent.getBookId(), importBookEvent.getQuantity(), Constant.INVENTORY_TYPE.IMPORT);
+    public void onBookOutOfStock(ImportBookEvent importBookEvent){
+        addInventory(importBookEvent.getBookId(), importBookEvent.getQuantity(), IMPORT);
     }
 
     @Override
@@ -67,11 +67,17 @@ public class BookInventoryServiceImpl implements BookInventoryService {
         return inventoryRepository.findById(id);
     }
 
-    @Scheduled(fixedDelay = 10000)
+    @Benchmark
+    @Override
+    public void createFakeData() {
+        inventoryRepository.createFakeData();
+    }
+
+    @Scheduled(fixedDelay = 60000)
     public void importBook(){
         List<String> listBookId = inventoryRepository.getListBookIdByInventoryNumber(1);
         for (String bookId : listBookId){
-            addInventory(bookId, 5, Constant.INVENTORY_TYPE.IMPORT);
+            addInventory(bookId, 5, IMPORT);
         }
     }
 
@@ -79,9 +85,9 @@ public class BookInventoryServiceImpl implements BookInventoryService {
     private String addInventory(String bookId, int quantity, String op) {
         BookInventory inventory = inventoryRepository.getLastInventoryByBookId(bookId);
         int amount = inventory.getAmount();
-        if (op.equals(Constant.INVENTORY_TYPE.BUY)) {
+        if (op.equals(BUY)) {
                 inventory.setAmount(amount - quantity);
-        } else if(op.equals(Constant.INVENTORY_TYPE.IMPORT)){
+        } else if(op.equals(IMPORT)){
             inventory.setAmount(amount+quantity);
         }
         inventory.setUpdateDate(LocalDateTime.now());
