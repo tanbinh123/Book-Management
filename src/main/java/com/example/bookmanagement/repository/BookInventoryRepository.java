@@ -28,7 +28,7 @@ public class BookInventoryRepository {
     public void createFakeData() {
         for (int i = 1; i <= 1000; i++) {
             BookInventory inventory = BookInventory.builder()
-                    .id(bookInventories.size())
+                    .id(i)
                     .bookId(String.valueOf(i))
                     .amount(faker.random().nextInt(0, 100))
                     .updateDate(LocalDateTime.now())
